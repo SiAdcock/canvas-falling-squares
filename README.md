@@ -22,13 +22,13 @@ Just add canvas-falling-squares.js to your HTML, or to your AMD module's depende
 
     new FallingSquares({ 
         canvas: canvas,
-        colours: ['#70A8FF', '#FFBA7A', '#E85254', '#2EE861'],
+        colours: ['#70A8FF', '#FFBA7A'],
         size: 10,
         spacing: 5,
         maxSpeed: 2,
         minSpeed: 0.5,
-        numberOfColumns: 20,
-        numberOfSquares: 10,
+        numberOfColumns: 5,
+        numberOfSquares: 3,
         backgroundColour: '#FFFFFF',
         xOffset: 10
     });
