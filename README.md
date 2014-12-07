@@ -27,7 +27,7 @@ bower install canvas-falling-squares
 ### Simple
 
     var canvas = document.getElementById('my-canvas');
-    var FallingSquares = new FallingSquares( { canvas: canvas } );
+    new FallingSquares( { canvas: canvas } );
 
 ### Fully Configured
 
