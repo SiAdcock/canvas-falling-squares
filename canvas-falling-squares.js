@@ -13,6 +13,8 @@
 
 }(function() {
 
+    // Rectangle with rounded corners
+    // from http://js-bits.blogspot.co.uk/2010/07/canvas-rounded-corner-rectangles.html
     CanvasRenderingContext2D.prototype.roundRect = CanvasRenderingContext2D.prototype.roundRect ||
         function(x, y, width, height, radius, fill, stroke) {
 
@@ -46,6 +48,14 @@
             }
         };
 
+    // FallingSquares
+    // ---------------
+
+    // The main FallingSquares constructor that will be exported.
+    // Applies a number of "sensible" defaults for demonstration
+    // but you should override these  for your own purposes by
+    // passing a configuration object.
+
     function FallingSquares(options) {
 
         var canvas = options.canvas,
@@ -61,21 +71,26 @@
             xOffset = options.xOffset || 10,
             columns = [],
 
-            //Helper functions for determining random positions / colours / speeds
+            // Helper functions for determining random positions / colours / speeds
             randomHelper = (function () {
 
-                //Determine whether a new square is overlapping an existing square
+                // Determine whether a new square would be overlapping an existing square
                 var isOverlapping = function (yNew, yExisting) {
                     return !(yNew + size < yExisting - spacing) && !(yNew > yExisting + spacing + size);
                 };
 
                 return {
 
-                    randomSpeed: function (maxSpeed, minSpeed) {
+                    // Square fall speed, allocated randomly between a maximum and minimum
+                    // Assigned when a column is generated, stays constant for the life of
+                    // the column
+                    randomSpeed: function () {
                         var speed = (Math.random() * maxSpeed);
                         speed = (speed < minSpeed) ? speed + minSpeed : speed;
                         return speed;
                     },
+
+                    // Colours will be assigned randomly, but distributed evenly
                     randomColour: function () {
                         var division = 1 / colours.length,
                             random = Math.random(),
@@ -90,13 +105,16 @@
                         }
 
                     },
+
+                    // Randomise the starting position of a square that has reached the bottom.
+                    // The square will always restart off-canvas and fall into it from the top.
                     randomY: function(column) {
                         var yPos = Math.floor(Math.random() * -canvas.height),
                             randomY = this.randomY.bind(this, column);
 
                         column.squares.forEach(function (square) {
-                            if (isOverlapping(yPos, square.getYPos())) {
-                                //if new square overlaps existing square, recursively find a new y position
+                            if (isOverlapping(yPos, square.y)) {
+                                // if new square overlaps existing square, recursively find a new y position
                                 yPos = randomY();
                             }
                         });
@@ -107,30 +125,39 @@
 
             }());
 
+        // Let's get this started
+        function begin() {
+            buildColumns();
+            animate();
+        }
 
-
+        // Generate the given number of columns, with given size and spacing options
         function buildColumns() {
             var i = 0,
                 currPos = xOffset;
 
             for (; i < numberOfColumns; i += 1) { 
-                columns.push(new Column(currPos, randomHelper.randomSpeed(maxSpeed, minSpeed)));
+                columns.push(new Column(currPos, randomHelper.randomSpeed()));
                 currPos += size + spacing;
             }
         }
 
+        // Every tick, cause animation to happen
         function animate() {
             requestAnimationFrame(animate);
             resetSquares();
             redraw();
         }
 
+        // Fill a blank rectangle over the top of all columns to reset the canvas 
+        // for the next animation tick
         function resetSquares() {
             var width = (size * numberOfColumns) + (spacing * (numberOfColumns - 1)) + xOffset;
             context.fillStyle = backgroundColour;
             context.fillRect(xOffset - 1, 0, width, canvas.height);
         }
 
+        // Redraw each column in turn
         function redraw() {
             columns.forEach(function (column) {
                 column.redraw();
@@ -138,67 +165,75 @@
         }
 
 
+        // Column
+        // ---------------
+
+        // Each column has its own x position and speed, that will remain constant
+        // for the life of the column. The column also maintains a reference to its
+        // child squares
 
         function Column(x, speed) {
-
             this.squares = [];
             this.speed = speed;
             this.x = x;
-
-            this.redraw = function () {
-                this.squares.forEach(function (square) {
-                    square.redraw();
-                });
-            };
-
-            this.buildSquares = function () {
-                var i = 0;
-                for (; i < numberOfSquares; i += 1) {
-                    this.squares.push(new Square({
-                        y: randomHelper.randomY(this),
-                        colour: randomHelper.randomColour(), 
-                        column: this
-                    }));
-                }
-            };
-
-            //begin column
             this.buildSquares();
-
         }
 
+
+        // Redraw each square in turn
+        Column.prototype.redraw = function () {
+            this.squares.forEach(function (square) {
+                square.redraw();
+            });
+        };
+
+        // Generate the given number of squares, with randomly assigned 
+        // colours and starting positions
+        Column.prototype.buildSquares = function () {
+            var i = 0;
+            for (; i < numberOfSquares; i += 1) {
+                this.squares.push(new Square({
+                    y: randomHelper.randomY(this),
+                    colour: randomHelper.randomColour(), 
+                    column: this
+                }));
+            }
+        };
+
+
+        // Square
+        // ---------------
+
+        // Each square has its own colour, that will remain constant for the
+        // life of the square. The square also maintains a reference back to
+        //  its parent column for determining speed, x position and ensuring it
+        // doesn't overlap any other squares in this column when it is redrawn
+        // at the top of the canvas.
 
         function Square(options) {
-
-            var y = options.y,
-                colour = options.colour,
-                column = options.column;
-
-            this.getYPos = function () {
-                return y;
-            };
-
-            this.redraw = function () {
-                y += column.speed;
-
-                //fallen off the bottom, randomise new starting position
-                if (y > canvas.height) {
-                    y = randomHelper.randomY(column);
-                }
-
-                context.fillStyle = colour;
-                context.strokeStyle = colour;
-                context.roundRect(column.x, y, size, size, 1, true, true);
-            };
+            this.y = options.y;
+            this.colour = options.colour,
+            this.column = options.column;
         }
 
-        //begin falling squares!
-        buildColumns();
+        Square.prototype.redraw = function () {
+            this.y += this.column.speed;
 
-        //start squares animation
-        animate();
+            //fallen off the bottom, randomise new starting position
+            if (this.y > canvas.height) {
+                this.y = randomHelper.randomY(this.column);
+            }
+
+            context.fillStyle = this.colour;
+            context.strokeStyle = this.colour;
+            context.roundRect(this.column.x, this.y, size, size, 1, true, true);
+        };
+
+        // Start the fun
+        begin();
+
     }
 
-
     return FallingSquares;
+
 }));
