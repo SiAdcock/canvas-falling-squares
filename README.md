@@ -1,6 +1,6 @@
 <snippet>
-  <content><![CDATA[
-# ${1:Canvas Falling Squares}
+  <content>
+# Canvas Falling Squares
  
 A quick, configurable way of getting squares to fall down your canvas. Sometimes, you just want falling squares.
  
@@ -11,7 +11,7 @@ Just add canvas-falling-squares.js to your HTML, or to your AMD module's depende
 ## Usage
 
     var canvas = document.getElementById('my-canvas');
-    var FallingSquares = new FallingSquares( { canvas: canvas });
+    var FallingSquares = new FallingSquares( { canvas: canvas } );
  
 ## Contributing
  
@@ -32,6 +32,7 @@ TODO: Write credits
 ## License
  
 TODO: Write license
-]]></content>
+
+</content>
   <tabTrigger>readme</tabTrigger>
 </snippet>
