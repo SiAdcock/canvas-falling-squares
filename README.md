@@ -1,5 +1,3 @@
-<snippet>
-  <content>
 # Canvas Falling Squares
  
 A quick, configurable way of getting squares to fall down your canvas. Sometimes, you just want falling squares.
@@ -32,7 +30,3 @@ TODO: Write credits
 ## License
  
 TODO: Write license
-
-</content>
-  <tabTrigger>readme</tabTrigger>
-</snippet>
