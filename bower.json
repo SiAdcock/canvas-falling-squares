@@ -1,0 +1,22 @@
+{
+  "name": "canvas-falling-squares",
+  "main": "canvas-falling-squares.js",
+  "version": "0.1.0",
+  "homepage": "https://github.com/SiCurious/canvas-falling-squares",
+  "authors": [
+    "Simon Adcock <simonadcock2@gmail.com>"
+  ],
+  "description": "A quick, configurable way of getting squares to fall down your canvas.",
+  "moduleType": [
+    "amd",
+    "globals"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/SiCurious/canvas-falling-squares.git"
+  }
+}
