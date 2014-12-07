@@ -4,7 +4,23 @@ A quick, configurable way of getting squares to fall down your canvas. Sometimes
  
 ## Installation
  
-Just add canvas-falling-squares.js to your HTML, or to your AMD module's dependencies. 
+In your HTML:
+
+```html
+<script src="canvas-falling-squares.js"></script>
+```
+
+In an AMD loader:
+
+```js
+require(['canvas-falling-squares'], function(FallingSquares) {/*…*/});
+```
+
+Or using Bower:
+
+```bash
+bower install canvas-falling-squares
+```
  
 ## Usage
 
